@@ -1,5 +1,5 @@
 import os
-
+from google.genai import types
 def write_file(working_directory, file_path, content):
 
     abs_working_dir = os.path.abspath(working_directory)
@@ -24,3 +24,22 @@ def write_file(working_directory, file_path, content):
     except Exception as e:
         return f"Faile to make file: {file_path, {e}}"
 
+
+schema_write_file = types.FunctionDeclaration(
+    name="write_file",
+    description="Writes content to a file. Creates necessary parent directories if they don't exist. Overwrites existing files. Access restricted to working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="Path where the file should be written (e.g., 'data/output.txt', 'script.py'). Relative to working directory.",
+            ),
+            "content": types.Schema(
+                type=types.Type.STRING,
+                description="The text content to write into the file.",
+            ),
+        },
+        required=["file_path", "content"],
+    ),
+)

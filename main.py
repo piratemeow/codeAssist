@@ -3,8 +3,15 @@ import argparse
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from functions.get_files_info import schema_get_files_info
+from functions.get_file_content import schema_get_file_content
+from functions.write_file import schema_write_file
+from functions.run_python_file import schema_run_python_file
 
 
+"""
+list the contents of the pkg directory. there you will find the instructions test file. read the instructions from the file.  make a new main.py file and write the code as per instructed in the instructions file and then run the code
+"""
 def model_init() -> str:
     load_dotenv()
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -20,12 +27,37 @@ def model_request_response(api_key:str, prompt:str):
     #     print(f"Display: {m.display_name}")
     #     print("---")
 
+    system_prompt = """
+            You are a helpful AI coding agent that fixes python codes.
+
+            When a user asks a question or makes a request, make a function call plan.
+            You may need to make multiple function calls to perform on a single prompt.
+            If one of the parameters is missing from the context, the prompt or you don't
+            understand clearly. Just ask for the parameter or as about your confusions.
+             
+            You can perform the following operations:
+
+            - List files and directories
+            - Read file contents
+            - Execute Python files with optional arguments
+            - Write or overwrite files
+
+            All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
+            """
     messsages = [
         types.Content(role="user",parts=[types.Part(text=prompt)])
     ]
+
+    available_functions = types.Tool(
+        function_declarations = [schema_get_files_info,
+                                 schema_get_file_content,
+                                 schema_run_python_file,
+                                 schema_write_file],
+    )
     response = client.models.generate_content(
-        model = "gemini-2.5-flash",
-        contents = messsages
+        model = "gemini-2.5-flash-lite",
+        contents = messsages,
+        config = types.GenerateContentConfig(tools=[available_functions],system_instruction=system_prompt)
     )
     return response
 
@@ -55,6 +87,14 @@ def dev_related_stuff(prompt:list, response : types.GenerateContentResponse):
     print(f'Response: {response_text}')
     print(f"Response tokens: {response_tokens}")
 
+    if response.function_calls is None:
+        print("No function calls made by the LLM")
+        return
+    
+    function_calls = response.function_calls
+
+    for function_call_part in function_calls:
+        print(f"Calling function: {function_call_part.name}({function_call_part.args})")
 
 
 def args_parser():

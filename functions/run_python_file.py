@@ -1,5 +1,6 @@
 import os
 import subprocess
+from google.genai import types
 def run_python_file(working_directory, file_path, args=[]):
     abs_working_dir = os.path.abspath(working_directory)
     abs_file_path = os.path.abspath(os.path.join(abs_working_dir,file_path))
@@ -34,3 +35,22 @@ def run_python_file(working_directory, file_path, args=[]):
         return f"Error: executing Python file: {e}"
 
     
+schema_run_python_file = types.FunctionDeclaration(
+    name="run_python_file",
+    description="Executes a Python file (.py) within the working directory with optional arguments. Captures STDOUT, STDERR, and exit code. 30-second timeout for preventing infinite loops. Paths outside working directory are blocked for security.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="Path to the Python file (.py) relative to working directory (e.g., 'script.py', 'utils/calc.py'). It will only accept a python (.py) file",
+            ),
+            "args": types.Schema(
+                type=types.Type.ARRAY,
+                items=types.Schema(type=types.Type.STRING),
+                description="List of command line arguments to pass to the Python script (e.g., ['5', '3', '--verbose']).",
+            ),
+        },
+        required=["file_path"],
+    ),
+)
