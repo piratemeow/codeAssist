@@ -12,7 +12,7 @@ def get_files_info(working_directory, directory="."):
     abs_working_dir = os.path.abspath(working_directory)
     abs_directory = os.path.abspath(os.path.join(abs_working_dir,directory))
 
-    print(abs_working_dir,abs_directory)
+    # print(abs_working_dir,abs_directory)
     # print(os.path.isdir(abs_directory))
 
     if not os.path.isdir(abs_directory):

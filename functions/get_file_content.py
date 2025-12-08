@@ -12,10 +12,13 @@ def get_file_content(working_directory, file_name):
         return f'Error: File not found or is not a regular file: "{file_name}"'
     
     file_content_string = ""
-    with open(abs_file_path,"r") as f:
-        file_content_string = f.read(MAX_CHARS)
-        if len(file_content_string) >=MAX_CHARS:
-            file_content_string+= f'[...File "{file_name}" truncated at 10000 characters]'
+    try:
+        with open(abs_file_path,"r") as f:
+            file_content_string = f.read(MAX_CHARS)
+            if len(file_content_string) >=MAX_CHARS:
+                file_content_string+= f'[...File "{file_name}" truncated at 10000 characters]'
+    except Exception as e:
+        return f"Error: An Exception {e} has occured while opening {abs_file_path}"
 
     return file_content_string
 
