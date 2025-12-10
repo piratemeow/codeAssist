@@ -1,1 +1,1 @@
-make me a tic_tac_toe game which i can play in cli. if the draw is obvious stop the game there and show the result is draw and start a new game
+make me a tic_tac_toe game which i can play in cli agiainst the computer.

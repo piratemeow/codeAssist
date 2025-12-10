@@ -10,25 +10,8 @@ from functions.run_python_file import schema_run_python_file
 from call_function import call_function
 
 
-model = "gemini-2.5-flash-lite"
-
-
-def model_init() -> str:
-    load_dotenv()
-    api_key = os.environ.get("GEMINI_API_KEY")
-    return api_key
-    # print(api_key)
-
-def model_request_response(api_key:str, prompt:str):
-    client = genai.Client(api_key=api_key)
-
-    """ To find the available models"""
-    # for m in client.models.list():
-    #     print(f"Name: {m.name}")
-    #     print(f"Display: {m.display_name}")
-    #     print("---")
-
-    system_prompt = """
+model = "gemini-2.5-flash"
+system_prompt = """
             You are a helpful AI coding agent that fixes python codes.
 
             All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
@@ -53,6 +36,23 @@ def model_request_response(api_key:str, prompt:str):
             verify if it is working as it is suppose to work.
 
             """
+
+def model_init() -> str:
+    load_dotenv()
+    api_key = os.environ.get("GEMINI_API_KEY")
+    return api_key
+    # print(api_key)
+
+def model_request_response(api_key:str, prompt:str):
+    client = genai.Client(api_key=api_key)
+
+    """ To find the available models"""
+    # for m in client.models.list():
+    #     print(f"Name: {m.name}")
+    #     print(f"Display: {m.display_name}")
+    #     print("---")
+
+    
     messsages = [
         types.Content(role="user",parts=[types.Part(text=prompt)])
     ]
@@ -125,25 +125,7 @@ def dev_related_stuff(api_key : str,prompt:list):
     #     print(f"Display: {m.display_name}")
     #     print("---")
 
-    system_prompt = """
-            You are a helpful AI coding agent that fixes python codes.
-
-            All paths you provide should be relative to the working directory. You do not need to specify the working directory in your function calls as it is automatically injected for security reasons.
-            When the user mentions directory he is refering to the working directory which is hard coded so you do not need to worry about that.
-        
-            When a user asks a question or makes a request, make a function call plan.
-            You may need to make multiple function calls to perform on a single prompt.
-            If one of the parameters is missing from the context, the prompt or you don't
-            understand clearly. Just ask for the parameter or as about your confusions.
-             
-            You can perform the following operations:
-
-            - List files and directories
-            - Read file contents
-            - Execute Python files with optional arguments
-            - Write or overwrite files
-
-            """
+    
     messsages = [
         types.Content(role="user",parts=[types.Part(text=prompt)])
     ]
