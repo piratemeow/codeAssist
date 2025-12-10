@@ -9,9 +9,10 @@ from functions.write_file import schema_write_file
 from functions.run_python_file import schema_run_python_file
 from call_function import call_function
 
-"""
-list the contents of the pkg directory. there you will find the instructions test file. read the instructions from the file.  make a new main.py file and write the code as per instructed in the instructions file and then run the code
-"""
+
+model = "gemini-2.5-flash-lite"
+
+
 def model_init() -> str:
     load_dotenv()
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -45,6 +46,12 @@ def model_request_response(api_key:str, prompt:str):
             - Execute Python files with optional arguments
             - Write or overwrite files
 
+            When the users as about code project - they are refering to the working directory. 
+            So you should typically start by looking at the project's files and figure out how to
+            run the project and its tests. You should always want to test the tests and the actual program
+            to verify that behavior is working. Also you should always want to test the code that you have written and
+            verify if it is working as it is suppose to work.
+
             """
     messsages = [
         types.Content(role="user",parts=[types.Part(text=prompt)])
@@ -62,7 +69,7 @@ def model_request_response(api_key:str, prompt:str):
     for iter in range(0,max_iter):
 
         response = client.models.generate_content(
-            model = "gemini-2.5-flash",
+            model = model,
             contents = messsages,
             config = types.GenerateContentConfig(tools=[available_functions],system_instruction=system_prompt)
         )
@@ -109,7 +116,7 @@ def print_response(response: types.GenerateContentResponse):
         print("Response Not Found")
         return
     
-def dev_related_stuff(prompt:list):
+def dev_related_stuff(api_key : str,prompt:list):
     client = genai.Client(api_key=api_key)
 
     """ To find the available models"""
@@ -153,7 +160,7 @@ def dev_related_stuff(prompt:list):
     for iter in range(0,max_iter):
 
         response = client.models.generate_content(
-            model = "gemini-2.5-flash",
+            model = model,
             contents = messsages,
             config = types.GenerateContentConfig(tools=[available_functions],system_instruction=system_prompt)
         )
@@ -222,7 +229,7 @@ def main():
     prompt,verbose = args_parser()
 
     if verbose:
-        dev_related_stuff(prompt)
+        dev_related_stuff(api_key,prompt)
     
     else :
         response = model_request_response(api_key,prompt)
