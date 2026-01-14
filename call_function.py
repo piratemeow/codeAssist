@@ -18,10 +18,22 @@ functions_dict = {
 
 def call_function(function_call_part, verbose=False):
     if verbose:
-        print(f"Calling function: {function_call_part.name}({function_call_part.args})")
+        print(f" - Calling function: {function_call_part.name}({function_call_part.args})")
 
     else:
-        print(f" - Calling function: {function_call_part.name}")
+        # print(function_call_part.args)
+        # print(f" - Calling function: {function_call_part.name}   {function_call_part.args}")
+        if function_call_part.name == 'get_files_info':
+            if 'directory' in function_call_part.args:
+                print(f" - Getting the contents of {working_directory}/{function_call_part.args['directory']} directory")
+            else:
+                print(f" - Getting the contents of {working_directory} directory")
+        elif function_call_part.name == 'run_python_file':
+            print(f" - Executing {working_directory}/{function_call_part.args['file_path']} file")
+        elif function_call_part.name == 'write_file':
+            print(f" - Writing to {working_directory}/{function_call_part.args['file_path']} file")
+        elif function_call_part.name == 'get_file_content':
+            print(f" - Reading the contents of {working_directory}/{function_call_part.args['file_name']} file")
 
     
     if function_call_part.name not in functions_dict:

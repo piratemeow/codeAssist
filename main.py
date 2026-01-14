@@ -8,7 +8,7 @@ from functions.get_file_content import schema_get_file_content
 from functions.write_file import schema_write_file
 from functions.run_python_file import schema_run_python_file
 from call_function import call_function
-
+import time
 
 model = "gemini-2.5-flash"
 system_prompt = """
@@ -29,11 +29,11 @@ system_prompt = """
             - Execute Python files with optional arguments
             - Write or overwrite files
 
-            When the users as about code project - they are refering to the working directory. 
+            When the users ask about code project - they are refering to the working directory. 
             So you should typically start by looking at the project's files and figure out how to
             run the project and its tests. You should always want to test the tests and the actual program
             to verify that behavior is working. Also you should always want to test the code that you have written and
-            verify if it is working as it is suppose to work.
+            verify if it is working as it is suppose to work. To test the code you should write test cases if it is more convenient. 
 
             """
 
@@ -67,7 +67,7 @@ def model_request_response(api_key:str, prompt:str):
     max_iter = 20
     response = []
     for iter in range(0,max_iter):
-
+        # time.sleep(20)
         response = client.models.generate_content(
             model = model,
             contents = messsages,

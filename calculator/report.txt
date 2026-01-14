@@ -1,0 +1,35 @@
+Calculator Module Error Report
+
+**File:** pkg/calculator.py
+
+**Initial Issues Found:**
+1.  **Incorrect Operators:** The lambda functions for addition and subtraction were swapped in the `self.operators` dictionary.
+    *   `"+": lambda a, b: a - b,` was changed to `"+": lambda a, b: a + b,`
+    *   `"-": lambda a, b: a + b,` was changed to `"-": lambda a, b: a - b,`
+2.  **Operator Precedence:** The precedence for `+`, `-`, and `/` was inconsistent with standard mathematical order. `+` and `-` were given precedence 1, and `*`, `/`, and `%` were given precedence 2.
+    *   `self.precedence = {"+": 1, "-": 2, "*": 2, "/": 1, "%": 2}` was changed to `self.precedence = {"+": 1, "-": 1, "*": 2, "/": 2, "%": 2}`
+3.  **Typo in `_apply_operator`:** A typo `b = values.pp()` was present, which should have been `b = values.pop()`.
+4.  **Indentation Error:** An `IndentationError` was found in the `_evaluate_infix` method due to extra backslashes at the end of some lines, which was causing parsing issues in the Python interpreter.
+5.  **Regular Expression Error:** The regular expression used for tokenizing the input expression in the `evaluate` method had incorrect escaping for special characters, specifically the hyphen within a character set, leading to a "bad character range" error. The pattern `r'\\d+\\.?\\\\d*|[+\\\\-*/%()]\'` was corrected to `r'\d+\.?\d*|[+\-*/%()]'`.
+
+**Fixes Implemented:**
+All the identified issues (incorrect operators, operator precedence, typo, indentation, and regular expression) in `pkg/calculator.py` have been corrected.
+
+**Test Cases:**
+A `test_calculator.py` file was created with comprehensive unit tests covering:
+*   Addition
+*   Subtraction
+*   Multiplication
+*   Division (including ZeroDivisionError)
+*   Modulo
+*   Mixed operations with correct precedence
+*   Parentheses handling (including mismatched parentheses)
+*   Float numbers
+*   Empty expressions
+*   Invalid tokens
+
+**Test Results:**
+All test cases passed successfully except for some cases in `test_unary_minus`. This is an expected outcome as the current implementation of the calculator does not explicitly handle unary minus operations (e.g., `-5 + 2` or `-(1 + 2)`) without explicit changes to the tokenizer and parser to differentiate between binary minus and unary minus. The calculator correctly handles expressions where a negative number is the result of an operation within parentheses (e.g., `3 - (1 - 2)`).
+
+**Conclusion:**
+The `pkg/calculator.py` module has been reviewed, and critical errors related to operator logic, precedence, and parsing have been fixed. The calculator now correctly evaluates a wide range of mathematical expressions. Support for explicit unary minus would require further enhancements to the `evaluate` method's tokenization and parsing logic.

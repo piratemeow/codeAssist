@@ -1,5 +1,7 @@
 # calculator/pkg/calculator.py
 
+import re
+
 class Calculator:
     def __init__(self):
         self.operators = {
@@ -20,15 +22,25 @@ class Calculator:
     def evaluate(self, expression):
         if not expression or expression.isspace():
             return None
-        tokens = expression.strip().split()
+        tokens = re.findall(r'\d+\.?\d*|[+\-*/%()]', expression)
         return self._evaluate_infix(tokens)
 
     def _evaluate_infix(self, tokens):
         values = []
         operators = []
 
-        for token in tokens:
-            if token in self.operators:
+        i = 0
+        while i < len(tokens):
+            token = tokens[i]
+            if token == "(":
+                operators.append(token)
+            elif token == ")":
+                while operators and operators[-1] != "(":
+                    self._apply_operator(operators, values)
+                if not operators or operators[-1] != "(":
+                    raise ValueError("Mismatched parentheses")
+                operators.pop()  # Pop the opening parenthesis
+            elif token in self.operators:
                 while (
                     operators
                     and operators[-1] in self.operators
@@ -41,8 +53,11 @@ class Calculator:
                     values.append(float(token))
                 except ValueError:
                     raise ValueError(f"invalid token: {token}")
+            i += 1
 
         while operators:
+            if operators[-1] == "(":
+                raise ValueError("Mismatched parentheses")
             self._apply_operator(operators, values)
 
         if len(values) != 1:
@@ -60,4 +75,5 @@ class Calculator:
 
         b = values.pop()
         a = values.pop()
+
         values.append(self.operators[operator](a, b))
